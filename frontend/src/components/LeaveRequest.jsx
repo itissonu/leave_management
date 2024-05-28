@@ -13,6 +13,7 @@ import { Button, MenuItem, TextField } from '@mui/material';
 import { HiMiniInformationCircle } from "react-icons/hi2";
 import { GetLeaveForEmployee, SubmitLeaveRequest } from '../redux/slice/leaveSlice';
 import toast, { Toaster } from 'react-hot-toast';
+import { URL } from '../utils/serverurl';
 
 const LeaveRequest = () => {
 
@@ -34,9 +35,9 @@ const LeaveRequest = () => {
  
 
   useEffect(() => {
-    axios.get('http://localhost:8002/api/leavetype/getalltypes')
+    axios.get(`${URL}leavetype/getalltypes`)
       .then(response => {
-        setLeaveTypes(response.data);
+        setLeaveTypes(response?.data);
       })
       .catch(error => {
         console.error('Error fetching leave types:', error);
@@ -72,9 +73,9 @@ const LeaveRequest = () => {
               className='w-36 lg:w-[200px] font-inter h-[100px] bg-white  flex  justify-between items-center p-2'
             > 
               <div className=' flex flex-col justify-start items-center p-2'>
-                <span className='text-sm opacity-75 font-bold font-inter text-gray-600'>{vacation.leaveType.name}</span>
+                <span className='text-sm opacity-75 font-bold font-inter text-gray-600'>{vacation?.leaveType?.name}</span>
                 <span className='text-xl font-bold text-black font-inter'>
-                  {vacation.balance}/<span className='text-sm text-gray-500'>{vacation.leaveType.maxAllowedDays} </span>
+                  {vacation?.balance}/<span className='text-sm text-gray-500'>{vacation?.leaveType?.maxAllowedDays} </span>
                 </span>
               </div>
               <div className='h-[80%] w-[1px] bg-black opacity-15' >
@@ -98,8 +99,8 @@ const LeaveRequest = () => {
                 >
                   <option value="" disabled selected className='text-sm font-inter flex  font-semibold'>Select Type</option>
                   {leaveTypes.map((leaveType) => (
-                    <option key={leaveType._id} value={leaveType._id}>
-                      {leaveType.name}
+                    <option key={leaveType?._id} value={leaveType?._id}>
+                      {leaveType?.name}
                     </option>
                   ))}
                 </select>

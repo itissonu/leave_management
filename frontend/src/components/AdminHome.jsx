@@ -83,7 +83,7 @@ const AdminHome = () => {
                     <div key={leave._id} className='flex gap-3 p-3'>
                       <img src={leave?.employeeId?.profilePicture} className="w-16 h-16 rounded-full" />
                       <div className='flex flex-col '>
-                        <span className='text-lg font-semibold text-gray-800 opacity-85 font-inter'>{leave.employeeId.name} </span>
+                        <span className='text-lg font-semibold text-gray-800 opacity-85 font-inter'>{leave?.employeeId?.name} </span>
                         <span className='text-gray-400 font-inter text-xs ' >software dev</span>
                         <span className='text-gray-400 font-inter text-xs '>{new Date(leave?.startDate).toLocaleDateString()} - {new Date(leave?.endDate).toLocaleDateString()}</span>
                       </div>

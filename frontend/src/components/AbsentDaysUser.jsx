@@ -85,8 +85,8 @@ const LeaveRequestItem = ({ leaveRequest }) => {
 
                 <div className='flex  justify-between'>
                     <div className='flex gap-10 text-gray-600 font-inter text-sm opacity-75'>
-                        <h3>{leaveRequest.leaveType.name}</h3>
-                        <p>{new Date(leaveRequest.startDate).toLocaleDateString()} - {new Date(leaveRequest.endDate).toLocaleDateString()}</p>
+                        <h3>{leaveRequest?.leaveType?.name}</h3>
+                        <p>{new Date(leaveRequest?.startDate).toLocaleDateString()} - {new Date(leaveRequest?.endDate).toLocaleDateString()}</p>
                     </div>
 
                     <button onClick={toggleDropdown}><MdArrowDropDown className='size-8' /></button>
@@ -95,8 +95,8 @@ const LeaveRequestItem = ({ leaveRequest }) => {
             </div>
             {isOpen && (
                 <div className='mt-4'>
-                    <p><strong>Reason:</strong> {leaveRequest.reason}</p>
-                    <p><strong>Status:</strong> {leaveRequest.status}</p>
+                    <p><strong>Reason:</strong> {leaveRequest?.reason}</p>
+                    <p><strong>Status:</strong> {leaveRequest?.status}</p>
                     {leaveRequest?.managerComments && <p><strong>Message:</strong> {leaveRequest?.managerComments}</p>}
 
                 </div>

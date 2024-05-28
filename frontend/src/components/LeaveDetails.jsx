@@ -47,14 +47,14 @@ const LeaveRequestItem = ({ leaveRequest }) => {
         <div className='border border-gray-200 bg-white rounded-md p-4'>
             <div className='flex flex-col gap-2'>
                 <div className='text-lg font-inter items-center font-bold flex gap-2'>
-                    {leaveRequest.status === 'pending' && <span className='bg-blue-900 rounded-full  size-max p-1 flex '><GiPerpendicularRings className='text-white size-3' /></span>}
-                    {leaveRequest.status === 'rejected' && <span className='bg-red-700 size-max rounded-full p-1 flex '><RxCross1 className='text-white font-semibold size-3' /></span>}
-                    {leaveRequest.status === 'approved' && <span className=' size-max rounded-full p-1 flex '><FcApproval /></span>}<span className='capitalize'>{leaveRequest.status}</span>
+                    {leaveRequest?.status === 'pending' && <span className='bg-blue-900 rounded-full  size-max p-1 flex '><GiPerpendicularRings className='text-white size-3' /></span>}
+                    {leaveRequest?.status === 'rejected' && <span className='bg-red-700 size-max rounded-full p-1 flex '><RxCross1 className='text-white font-semibold size-3' /></span>}
+                    {leaveRequest?.status === 'approved' && <span className=' size-max rounded-full p-1 flex '><FcApproval /></span>}<span className='capitalize'>{leaveRequest.status}</span>
                 </div>
 
                 <div className='flex  justify-between'>
                     <div className='flex gap-10 text-gray-600 font-inter text-sm opacity-75'>
-                        <h3>{leaveRequest.leaveType.name}</h3>
+                        <h3>{leaveRequest?.leaveType.name}</h3>
                         <p>{new Date(leaveRequest.startDate).toLocaleDateString()} - {new Date(leaveRequest.endDate).toLocaleDateString()}</p>
                     </div>
 
@@ -64,8 +64,8 @@ const LeaveRequestItem = ({ leaveRequest }) => {
             </div>
             {isOpen && (
                 <div className='mt-4'>
-                    <p><strong>Reason:</strong> {leaveRequest.reason}</p>
-                    <p><strong>Status:</strong> {leaveRequest.status}</p>
+                    <p><strong>Reason:</strong> {leaveRequest?.reason}</p>
+                    <p><strong>Status:</strong> {leaveRequest?.status}</p>
                     {leaveRequest?.managerComments && <p><strong>Message:</strong> {leaveRequest?.managerComments}</p>}
 
                 </div>
