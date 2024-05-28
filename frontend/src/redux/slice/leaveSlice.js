@@ -78,6 +78,7 @@ const leaveSlice = createSlice({
                 state.message = (action.payload.message);
 
                 state.success = true;
+                toast.success(action.payload.message)
             })
             .addCase(SubmitLeaveRequest.rejected, (state, action) => {
                 state.loading = false;
