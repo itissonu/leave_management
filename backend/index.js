@@ -22,7 +22,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use(cors({
-    origin: '*',
+    origin: 'https://leave-management-brown.vercel.app',
     credentials: true,
 }));
 app.use('/api/user',userTypeRoute)
