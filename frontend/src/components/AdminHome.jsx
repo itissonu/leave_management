@@ -11,8 +11,9 @@ import { GetallLeavesAdmin } from '../redux/slice/leaveSlice';
 import { useNavigate } from 'react-router-dom';
 import { IoPeople } from "react-icons/io5";
 import { TbNotification } from "react-icons/tb";
+import Loader from './Loader';
 const AdminHome = () => {
-  const { user, alluser } = useSelector((state) => state?.auth);
+  const { user, alluser, loading } = useSelector((state) => state?.auth);
   const { leaveRequests, message, allleavesAdmin } = useSelector((state) => state.leave);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ const AdminHome = () => {
 
   const absencesToday = approvedLeaves?.filter(
     (leave) =>
-      dayjs(leave.startDate).isSame(today, 'day')&& dayjs(leave.endDate).isSame(today, 'day')
+      dayjs(leave.startDate).isSame(today, 'day') && dayjs(leave.endDate).isSame(today, 'day')
   );
   const absencesFuture = approvedLeaves?.filter(
     (leave) =>
@@ -54,7 +55,7 @@ const AdminHome = () => {
 
   return (
     <div>
-
+      {loading && <Loader />}
       <div className='w-full h-44 md:mt-6 mt-1 flex flex-row relative px-3'>
         <img src={img1} className='h-full w-full md:w-[80%]' />
         <span className='md:text-4xl absolute top-[50%] left-20 text-white font-inter font-bold'> Welcome Admin! </span>

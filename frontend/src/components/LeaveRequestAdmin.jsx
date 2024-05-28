@@ -8,6 +8,7 @@ import ApprovedLeaveRequests from '../leaverequests/ApprovedLeaveRequests';
 import RejectedLeaveRequests from '../leaverequests/RejectedLeaveRequests';
 import { GetallLeavesAdmin } from '../redux/slice/leaveSlice';
 import { useNavigate, useParams } from 'react-router-dom';
+import Loader from './Loader';
 
 
 
@@ -21,7 +22,7 @@ const LeaveRequestAdmin = () => {
     dispatch(GetallLeavesAdmin(''));
   }, [dispatch]);
 
-  const { allleavesAdmin } = useSelector((state) => state.leave);
+  const { allleavesAdmin, loading } = useSelector((state) => state.leave);
   console.log(allleavesAdmin)
   const handleTabClick = (index) => {
     setActiveTabIndex(index);
@@ -45,6 +46,7 @@ const LeaveRequestAdmin = () => {
 
   return (
     <div className='flex flex-col'>
+      {loading && <Loader />}
       <div className='w-full h-44 md:mt-6 mt-2 flex flex-row relative'>
         <img src={img1} className='h-full md:w-[80%] px-2' />
         <span className='md:text-4xl absolute top-[50%] left-12 md:left-20 text-white font-inter font-bold'>Leave Requests!</span>
