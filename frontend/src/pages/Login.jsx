@@ -33,7 +33,7 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && user) {
 
       if (user.role === 'manager') {
         navigate('/manager');
