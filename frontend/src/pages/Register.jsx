@@ -150,7 +150,7 @@ const Register = () => {
                         ...modalSize,
                     }}
                 >
-                    <div className='w-full flex md:flex-row flex-col items-center justify-center gap-8 h-full'>
+                    <div className='w-full flex md:flex-row flex-col items-center justify-center gap-2 h-full'>
                         <div className='md:w-1/2'>
                             <img src={login} className='w-[17rem] md:w-full' alt="Login" />
                         </div>
@@ -202,7 +202,7 @@ const Register = () => {
                                     <button
                                         type="button"
                                         onClick={handleSendOTP}
-                                        className="w-full bg-yellow-400 py-[12px] px-[12px] rounded-[8px] mt-6 font-medium text-richblack-900"
+                                        className="w-full bg-yellow-400 py-[12px] px-[12px] rounded-[8px] mt-4 font-medium text-richblack-900"
                                     >
                                         Send OTP
                                     </button>
@@ -270,7 +270,7 @@ const Register = () => {
                                             type="submit" disabled={loading}
                                             className="px-4 py-2 bg-black h-16 text-white w-full font-semibold rounded-md hover:bg-slate-950"
                                         >
-                                            {loading ? "Registering..." : "Register"}
+                                            {load ? <span className='h-6 w-6 rounded-full border-b-2 border-white animate-spin flex '></span> : "Register"}
                                         </button>
                                     </div>
                                 )}
