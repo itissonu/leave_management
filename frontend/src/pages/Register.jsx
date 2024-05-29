@@ -12,6 +12,7 @@ import { RegisterUser } from '../redux/slice/authSlice';
 import axios from 'axios';
 import { URL } from '../utils/serverurl';
 import toast from 'react-hot-toast';
+import Loader from '../components/Loader';
 import { useMediaQuery } from '@mui/material';
 
 
@@ -32,6 +33,7 @@ const Register = () => {
     const [isOtpSent, setIsOtpSent] = useState(false);
     const [email, setEmail] = useState('')
     const { loading, error, success } = useSelector((state) => state.auth);
+    const [load, setLoad] = useState(false)
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: zodResolver(registerSchema),
     });
@@ -58,16 +60,18 @@ const Register = () => {
 
     const handleSendOTP = async () => {
         try {
-            // console.log(data)
+            setLoad(true)
             const otpRes = await axios.post(`${URL}user/send-otp`, { email: email }, {
                 withCredentials: true,
             });
             console.log(otpRes)
             if (otpRes?.data?.success) {
+                setLoad(false)
                 toast.success("OTP sent successfully");
                 setIsOtpSent(true);
             }
         } catch (error) {
+            setLoad(false)
             console.error("Error sending OTP:", error);
         }
     };
@@ -125,6 +129,7 @@ const Register = () => {
 
     return (
         <div className='h-full w-full bg-white relative z-50'>
+            {load && <Loader/>}
             <Modal
                 open={true}
                 onClose={false}
@@ -270,7 +275,7 @@ const Register = () => {
                                     </div>
                                 )}
                             </form>
-                            <span className='underline font-bold text-center mt-4 flex justify-center w-[85%] hover:cursor-pointer font-Montserrat ' onClick={()=>navigate('/login')}>Back to Login</span>
+                            <span className='underline font-bold text-center mt-4 flex justify-center w-[85%] hover:cursor-pointer font-Montserrat ' onClick={() => navigate('/login')}>Back to Login</span>
                         </div>
                     </div>
                 </Box>
