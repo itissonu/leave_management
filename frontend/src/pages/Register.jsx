@@ -111,7 +111,7 @@ const Register = () => {
     useEffect(() => {
         if (isAuthenticated && success) {
             toast.success("Registration successful");
-            navigate('/login');
+            navigate('/');
         }
     }, [success, isAuthenticated,navigate]);
 

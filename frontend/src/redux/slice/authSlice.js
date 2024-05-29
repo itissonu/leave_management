@@ -136,7 +136,7 @@ export const authSlice = createSlice({
             .addCase(RegisterUser.fulfilled, (state, action) => {
 
                 state.loading = false;
-                state.user = action.payload.user;
+               // state.user = action.payload.user;
                 state.isAuthenticated = true;
                 state.success = true;
                 state.message = 'New user created  Successfully.'
