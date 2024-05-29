@@ -13,7 +13,7 @@ import Loader from '../components/Loader';
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string().min(6, "Password required and must be at least 6 characters"),
 });
 const Login = () => {
   const dispatch = useDispatch();
@@ -104,7 +104,7 @@ const Login = () => {
                     id="email"
                     type="email"
                     {...register("email")}
-                    className="mt-1 p-2 border-b-gray-500 border-b-[1px] outline-none   md:w-full"
+                    className="mt-1 p-2 border-b-gray-500 border-b-[1px] outline-none focus:ring-0   md:w-full"
                   />
                   {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
                 </div>

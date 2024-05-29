@@ -15,10 +15,8 @@ import toast from 'react-hot-toast';
 import Loader from '../components/Loader';
 import { useMediaQuery } from '@mui/material';
 
-
 const registerSchema = z.object({
     name: z.string().min(1, "Name is required"),
-    //  email: z.string().email("Invalid email address"),
     password: z.string().min(6, "Password must be at least 6 characters"),
     phone: z.string().min(10, "Phone number must be at least 10 digits"),
 });
@@ -31,105 +29,103 @@ const Register = () => {
     const [otp, setOtp] = useState('');
     const [filevalue, setFileValue] = useState('');
     const [isOtpSent, setIsOtpSent] = useState(false);
-    const [email, setEmail] = useState('')
+    const [isOtpVerified, setIsOtpVerified] = useState(false);
+    const [email, setEmail] = useState('');
+    const [newError, setError] = useState(null);
     const { loading, error, success } = useSelector((state) => state.auth);
-    const [load, setLoad] = useState(false)
+    const [load, setLoad] = useState(false);
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: zodResolver(registerSchema),
     });
-    console.log(email)
+
     const getModalSize = () => {
         if (isSmallScreen) {
-            return {
-                width: '90%',
-                height: 'auto',
-            };
+            return { width: '90%', height: 'auto' };
         } else if (isMediumScreen) {
-            return {
-                width: '90%',
-                height: 'auto',
-            };
+            return { width: '90%', height: 'auto' };
         } else {
-            return {
-                width: 1200,
-                height: 700,
-            };
+            return { width: 1200, height: 800 };
         }
     };
     const modalSize = getModalSize();
 
     const handleSendOTP = async () => {
         try {
-            setLoad(true)
-            const otpRes = await axios.post(`${URL}user/send-otp`, { email: email }, {
-                withCredentials: true,
-            });
-            console.log(otpRes)
-            if (otpRes?.data?.success) {
-                setLoad(false)
-                toast.success("OTP sent successfully");
-                setIsOtpSent(true);
+            setLoad(true);
+            const verifyRes = await axios.post(`${URL}user/verifyuser`, { email: email }, { withCredentials: true });
+            if (verifyRes?.data?.success) {
+                const otpRes = await axios.post(`${URL}user/send-otp`, { email: email }, { withCredentials: true });
+                if (otpRes?.data?.success) {
+                    setLoad(false);
+                    toast.success("OTP sent successfully");
+                    setIsOtpSent(true);
+                }
             }
         } catch (error) {
-            setLoad(false)
-            console.error("Error sending OTP:", error);
+            setError(error.response.data.message);
+            setLoad(false);
+        }
+    };
+
+    const handleVerifyOTP = async () => {
+        try {
+            setLoad(true);
+            const otpVerifyRes = await axios.post(`${URL}user/register/otp`, { otp: otp }, { withCredentials: true });
+            if (otpVerifyRes?.data?.success) {
+                setIsOtpVerified(true);
+                toast.success("OTP verified successfully");
+                setLoad(false);
+            } else {
+                setError("Invalid OTP");
+                setLoad(false);
+            }
+        } catch (error) {
+            setError(error.response.data.message || "Error verifying OTP");
+            setLoad(false);
         }
     };
 
     const Signup = async (data) => {
         try {
-            const verifyRes = await axios.post(`${URL}user/verifyuser`, { email: email }, {
-                withCredentials: true,
-            });
-            if (verifyRes?.data?.success) {
-                let photo
-
-
-                const photodata = new FormData();
-                if (filevalue) {
-                    photodata.append('file', filevalue);
-                    photodata.append('upload_preset', 'upload');
-                }
-                if (filevalue) {
-                    const uploadRes = await axios.post(
-                        'https://api.cloudinary.com/v1_1/dbsonu270/image/upload',
-                        photodata
-                    );
-                    const { url } = uploadRes.data;
-                    photo = url;
-                }
-                const userData = {
-                    ...data, email: email,
-                    profilePicture: photo || '',
-                };
-                dispatch(RegisterUser(userData))
-
-                if (success) {
-                    toast.success("Registration success")
-                    navigate('/login');
-                };
-
-
+            let photo;
+            const photodata = new FormData();
+            if (filevalue) {
+                photodata.append('file', filevalue);
+                photodata.append('upload_preset', 'upload');
+            }
+            if (filevalue) {
+                const uploadRes = await axios.post('https://api.cloudinary.com/v1_1/dbsonu270/image/upload', photodata);
+                const { url } = uploadRes.data;
+                photo = url;
+            }
+            const userData = { ...data, email: email, profilePicture: photo || '' };
+            dispatch(RegisterUser(userData));
+            if (success) {
+                toast.success("Registration successful");
+                navigate('/login');
             }
         } catch (error) {
-
-            console.error("Error verifying OTP:", error);
+            setError(error.response.data.message || "Error registering user");
         }
     };
 
     const onSubmit = (data) => {
-
         if (!isOtpSent) {
             handleSendOTP();
+        } else if (!isOtpVerified) {
+            if (otp) {
+                handleVerifyOTP();
+            } else {
+                setError("Please enter the OTP");
+            }
         } else {
-
             Signup(data);
         }
     };
 
     return (
         <div className='h-full w-full bg-white relative z-50'>
-            {load && <Loader/>}
+            {load && <Loader />}
             <Modal
                 open={true}
                 onClose={false}
@@ -166,13 +162,13 @@ const Register = () => {
                                     <input
                                         id="email"
                                         type="email"
-                                        // {...register("email")}
                                         onChange={e => setEmail(e.target.value)}
                                         className="mt-1 p-2 border-b-gray-500 border-b-[1px] outline-none md:w-full"
                                     />
                                     {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
                                 </div>
-                                {isOtpSent && (
+                                {newError && <p className="text-red-500 text-sm">{newError}</p>}
+                                {isOtpSent && !isOtpVerified && (
                                     <div className="mb-4 flex flex-col gap-1">
                                         <label htmlFor="otp" className="block text-sm font-medium text-gray-700">
                                             OTP
@@ -202,80 +198,79 @@ const Register = () => {
                                     <button
                                         type="button"
                                         onClick={handleSendOTP}
-                                        className="w-full bg-yellow-400 py-[12px] px-[12px] rounded-[8px] mt-4 font-medium text-richblack-900"
+                                        className="w-full bg-yellow-400 py-[12px] px-[12px] rounded-[8px] mt-4 font-medium text-black flex justify-center items-center"
                                     >
-                                        Send OTP
+                                        {load ? <span className='h-6 w-6 rounded-full border-b-2 border-white animate-spin flex '></span> : 'Send OTP'}
                                     </button>
                                 )}
-                                {isOtpSent && (
-                                    <div className="mb-4 flex flex-col gap-1">
-                                        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                                            Name
-                                        </label>
-                                        <input
-                                            id="name"
-                                            type="text"
-                                            {...register("name")}
-                                            className="mt-1 p-2 border-b-gray-500 border-b-[1px] outline-none md:w-full"
-                                        />
-                                        {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
-                                    </div>
+                                {isOtpSent && !isOtpVerified && (
+                                    <button
+                                        type="button"
+                                        onClick={handleVerifyOTP}
+                                        className="w-full bg-yellow-400 py-[12px] px-[12px] rounded-[8px] mt-4 font-medium text-black flex justify-center items-center"
+                                    >
+                                        {load ? <span className='h-6 w-6 rounded-full border-b-2 border-white animate-spin flex '></span> : 'Verify OTP'}
+                                    </button>
                                 )}
-                                {isOtpSent && (
-                                    <div className="mb-4 flex flex-col gap-1">
-                                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                                            Password
-                                        </label>
-                                        <input
-                                            id="password"
-                                            type="password"
-                                            {...register("password")}
-                                            className="mt-1 p-2 border-b-gray-500 border-b-[1px] outline-none w-full"
-                                        />
-                                        {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
-                                    </div>
-                                )}
-                                {isOtpSent && (
-                                    <div className="mb-4 flex flex-col gap-1">
-                                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                                            Phone
-                                        </label>
-                                        <input
-                                            id="phone"
-                                            type="text"
-                                            {...register("phone")}
-                                            className="mt-1 p-2 border-b-gray-500 border-b-[1px] outline-none w-full"
-                                        />
-                                        {errors.phone && <p className="text-red-500 text-sm">{errors.phone.message}</p>}
-                                    </div>
-                                )}
-                                {isOtpSent && (
-                                    <div className="mb-4 flex flex-col gap-1">
-                                        <label htmlFor="profilePicture" className="block text-sm font-medium text-gray-700">
-                                            Profile Picture
-                                        </label>
-                                        <input
-                                            required
-                                            id="profilePicture"
-                                            type="file"
-                                            onChange={(e) => setFileValue(e.target.files[0])}
-                                            className="mt-1 p-2 border-b-gray-500 border-b-[1px] outline-none w-full"
-                                        />
-                                    </div>
-                                )}
-                                {error && <p className="text-red-500 text-sm">{error}</p>}
-                                {isOtpSent && (
-                                    <div className="flex items-center w-full justify-between">
+                                {isOtpVerified && (
+                                    <>
+                                        <div className="mb-4 flex flex-col gap-1">
+                                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                                                Name
+                                            </label>
+                                            <input
+                                                id="name"
+                                                type="text"
+                                                {...register("name")}
+                                                className="mt-1 p-2 border-b-gray-500 border-b-[1px] outline-none md:w-full"
+                                            />
+                                            {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+                                        </div>
+                                        <div className="mb-4 flex flex-col gap-1">
+                                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                                                Password
+                                            </label>
+                                            <input
+                                                id="password"
+                                                type="password"
+                                                {...register("password")}
+                                                className="mt-1 p-2 border-b-gray-500 border-b-[1px] outline-none w-full"
+                                            />
+                                            {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+                                        </div>
+                                        <div className="mb-4 flex flex-col gap-1">
+                                            <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                                                Phone
+                                            </label>
+                                            <input
+                                                id="phone"
+                                                type="text"
+                                                {...register("phone")}
+                                                className="mt-1 p-2 border-b-gray-500 border-b-[1px] outline-none w-full"
+                                            />
+                                            {errors.phone && <p className="text-red-500 text-sm">{errors.phone.message}</p>}
+                                        </div>
+                                        <div className="mb-4 flex flex-col gap-1">
+                                            <label htmlFor="profilePicture" className="block text-sm font-medium text-gray-700">
+                                                Profile Picture
+                                            </label>
+                                            <input
+                                                id="profilePicture"
+                                                type="file"
+                                                required
+                                                onChange={(e) => setFileValue(e.target.files[0])}
+                                                className="mt-1 p-2 border-b-gray-500 border-b-[1px] outline-none w-full"
+                                            />
+                                        </div>
                                         <button
-                                            type="submit" disabled={loading}
-                                            className="px-4 py-2 bg-black h-16 text-white w-full font-semibold rounded-md hover:bg-slate-950"
+                                            type="submit"
+                                            className="w-full bg-yellow-400 py-[12px] px-[12px] rounded-[8px] mt-4 font-medium text-richblack-900"
                                         >
-                                            {load ? <span className='h-6 w-6 rounded-full border-b-2 border-white animate-spin flex '></span> : "Register"}
+                                            Register
                                         </button>
-                                    </div>
+                                    </>
                                 )}
                             </form>
-                            <span className='underline font-bold text-center mt-4 flex justify-center w-[85%] hover:cursor-pointer font-Montserrat ' onClick={() => navigate('/login')}>Back to Login</span>
                         </div>
                     </div>
                 </Box>
