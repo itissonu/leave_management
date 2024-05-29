@@ -32,7 +32,7 @@ const Register = () => {
     const [isOtpVerified, setIsOtpVerified] = useState(false);
     const [email, setEmail] = useState('');
     const [newError, setError] = useState(null);
-    const { loading, error, success } = useSelector((state) => state.auth);
+    const { loading, error, success, isAuthenticated } = useSelector((state) => state.auth);
     const [load, setLoad] = useState(false);
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: zodResolver(registerSchema),
@@ -102,22 +102,18 @@ const Register = () => {
             const userData = { ...data, email: email, profilePicture: photo || '' };
             dispatch(RegisterUser(userData));
             setLoad(false)
-            // if (success) {
-            //     setLoad(false)
-            //     toast.success("Registration successful");
-            //     navigate('/login');
-            // }
+           
         } catch (error) {
             setLoad(false)
             setError(error.response.data.message || "Error registering user");
         }
     };
     useEffect(() => {
-        if (success) {
+        if (isAuthenticated && success) {
             toast.success("Registration successful");
             navigate('/login');
         }
-    }, [success, navigate]);
+    }, [success, isAuthenticated,navigate]);
 
     const onSubmit = (data) => {
         if (!isOtpSent) {
