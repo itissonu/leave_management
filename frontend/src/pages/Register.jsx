@@ -87,6 +87,7 @@ const Register = () => {
 
     const Signup = async (data) => {
         try {
+            setLoad(true)
             let photo;
             const photodata = new FormData();
             if (filevalue) {
@@ -101,10 +102,12 @@ const Register = () => {
             const userData = { ...data, email: email, profilePicture: photo || '' };
             dispatch(RegisterUser(userData));
             if (success) {
+                setLoad(false)
                 toast.success("Registration successful");
                 navigate('/login');
             }
         } catch (error) {
+            setLoad(false)
             setError(error.response.data.message || "Error registering user");
         }
     };
@@ -264,8 +267,9 @@ const Register = () => {
                                         </div>
                                         <button
                                             type="submit"
-                                            className="w-full bg-yellow-400 py-[12px] px-[12px] rounded-[8px] mt-4 font-medium text-richblack-900"
+                                            className="w-full bg-yellow-400 flex justify-center items-center py-[12px] px-[12px] rounded-[8px] mt-4 font-medium text-black"
                                         >
+                                        {load?<span className='h-6 w-6 rounded-full border-b-2 border-white animate-spin flex '></span>:"Register"}
                                             Register
                                         </button>
                                     </>
